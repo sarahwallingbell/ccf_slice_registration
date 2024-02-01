@@ -1,0 +1,13 @@
+# Ignore all CSV files
+*.csv
+
+# Ignore specific folders and their contents
+__pycache__/
+ccf_reg_input/
+ccf_reg_output/
+ccf_reg_output*/
+ccf_reg_reports/
+new_standardization/
+old/
+output/
+bad_transform_examples/
