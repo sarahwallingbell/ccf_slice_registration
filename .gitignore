@@ -1,5 +1,6 @@
-# Ignore all CSV files
+# Ignorespecific file types
 *.csv
+*.DS_Store
 
 # Ignore specific folders and their contents
 __pycache__/
@@ -13,3 +14,5 @@ output/
 bad_transform_examples/
 old_output_csvs/
 misc_code/
+ccf_reg_database/
+cell_soma_structure_and_coords/
