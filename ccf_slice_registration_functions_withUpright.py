@@ -618,19 +618,15 @@ def register_morph(sp_name, sp_id, lims_soma, morph, swc_path, swc_name, cell_so
     x_shift = lims_soma[0] - soma['x']
     y_shift = lims_soma[1] - soma['y']
     morph = shift( x_shift, y_shift, 0, morph)
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'_reg_shift_soma.swc'))
 
     # 3) transform the morphology to match the virtual slice
     morph = overview_to_virtual_slice_transform_morphology(morph, overview_to_virtual_slice_transform)
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'_reg_to_virtual.swc'))
 
     # 4) transform from virtual slice to CCF space
     morph = virtual_slice_to_ccf_transform_morphology(morph, virtual_slice_to_ccf_transform)
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'_reg.swc'))
 
     # 5) transform data from LPS (what simpleITK is in) to PIR coords (what ccf is in) 
     morph = lps_to_pir_tranform_morphology(morph)
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'_reg_pir.swc'))
 
     # 6) shift to provided ccf soma coordinate
     soma = morph[1]
@@ -639,7 +635,6 @@ def register_morph(sp_name, sp_id, lims_soma, morph, swc_path, swc_name, cell_so
     y_shift = ccf_soma[1] - soma['y']
     z_shift = ccf_soma[2] - soma['z']
     morph = shift( x_shift, y_shift, z_shift, morph)
-    # dict_to_swc(morph, os.path.join(swc_path, swc_name+'_reg_pir_shifted.swc'))
 
     # 7) resample morphology for even node spacing and save registered cell in pir coords 
     spacing = 1.144 
@@ -658,31 +653,23 @@ def register_morph(sp_name, sp_id, lims_soma, morph, swc_path, swc_name, cell_so
 def upright_morph(sp_name, sp_id, lims_soma, morph, swc_path, swc_name, cell_soma_info, overview_to_virtual_slice_upright_transform, virtual_slice_to_ccf_transform,
                   resolution, volume_shape, z_midline):
 
-    # 0) save original swc 
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'.swc'))
-
     # 1) if needed correct for shrinkage - this should only affect the z coordinate!
     morph = shrinkage_correct(morph, sp_id)
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'_shrinkage_corrected_upright_new.swc'))
 
     # 2) translate the (x,y) coorinates of the morphology such that the soma node is in the corresponding position in the overview image
     soma = morph[1]
     x_shift = lims_soma[0] - soma['x']
     y_shift = lims_soma[1] - soma['y']
     morph = shift( x_shift, y_shift, 0, morph)
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'_shifted_soma_upright_new.swc'))
 
     # 3) transform the morphology to match the virtual slice - UPRIGHT transform, only rotates to match dorsal/ventral axis. 
     morph = overview_to_virtual_slice_transform_morphology(morph, overview_to_virtual_slice_upright_transform)
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'_to_virtual_upright_new.swc'))
 
     # 4) transform from virtual slice to CCF space
     morph = virtual_slice_to_ccf_transform_morphology(morph, virtual_slice_to_ccf_transform)
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'_reoriented_upright_new.swc'))
 
     # 5) transform data from LPS (what simpleITK is in) to PIR coords (what ccf is in)
     morph = lps_to_pir_tranform_morphology(morph)
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'_reoriented_pir_upright_new.swc'))
 
     # 6) shift to provided ccf soma coordinate
     soma = morph[1]
@@ -691,7 +678,6 @@ def upright_morph(sp_name, sp_id, lims_soma, morph, swc_path, swc_name, cell_som
     y_shift = ccf_soma[1] - soma['y']
     z_shift = ccf_soma[2] - soma['z']
     morph = shift( x_shift, y_shift, z_shift, morph)
-    dict_to_swc(morph, os.path.join(swc_path, swc_name+'_reoriented_pir_shifted_upright_new.swc'))
 
     # 7) normalize soma location, resample, and save upright_pir
     spacing = 1.144 
