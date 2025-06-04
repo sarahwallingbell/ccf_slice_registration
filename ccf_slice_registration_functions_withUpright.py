@@ -613,6 +613,12 @@ def register_morph(sp_name, sp_id, lims_soma, morph, swc_path, swc_name, cell_so
     morph = shrinkage_correct(morph, sp_id)
     dict_to_swc(morph, os.path.join(swc_path, swc_name+'_shrinkage_corrected.swc'))
 
+    # 1.5) resample 
+    spacing = 1.144 
+    morph_r = dict_to_morphology(copy.deepcopy(morph))
+    morph_r = resample_morphology(morph_r, spacing)
+    morphology_to_swc(morph_r, os.path.join(swc_path, swc_name+'_shrinkage_corrected_resampled.swc'))
+
     # 2) translate the (x,y) coorinates of the morphology such that the soma node is in the corresponding position in the overview image
     soma = morph[1]
     x_shift = lims_soma[0] - soma['x']
@@ -637,7 +643,7 @@ def register_morph(sp_name, sp_id, lims_soma, morph, swc_path, swc_name, cell_so
     morph = shift( x_shift, y_shift, z_shift, morph)
 
     # 7) resample morphology for even node spacing and save registered cell in pir coords 
-    spacing = 1.144 
+    # spacing = 1.144 
     morph_obj = dict_to_morphology(copy.deepcopy(morph))
     morph_obj = resample_morphology(morph_obj, spacing)
     morphology_to_swc(morph_obj, os.path.join(swc_path, swc_name+'_registered_pir.swc'))
