@@ -16,7 +16,7 @@ class RegisterCCFSchema(ags.ArgSchema):
     ccf_annotation_file = ags.fields.String( dump_default="/root/capsule/data/ccf/annotation_10.nrrd", metadata={'description':"Path to CCF annotation file"})
     ccf_template_file = ags.fields.String(dump_default="/root/capsule/data/ccf/average_template_10.nii.gz", metadata={'description': 'Path to CCF file'})
     ccf_resolution = ags.fields.Int(dump_default=10, metadata={'description':"CCF voxel resolution in microns"})
-    slice_file = ags.fields.String(dump_default='/root/capsule/data/slices_to_register.txt', metadata={'description': 'File with slice names to regsiter'})
+    slice_file = ags.fields.String(dump_default=None, metadata={'description': 'File with slice names to regsiter'})
     #TODO add cell file option?
 
 def main(args):
