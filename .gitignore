@@ -2,10 +2,10 @@
 *.DS_Store
 
 # Ignore specific folders and their contents
-/data/*
-/archive/*
-/results/*
-/scratch/*
+/data/
+/archive/
+/results/
+/scratch/
 */.vscode/
 .codeocean
 

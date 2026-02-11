@@ -11,12 +11,12 @@ from tqdm import tqdm
 
 
 class RegisterCCFSchema(ags.ArgSchema):
-    out = ags.fields.OutputDir(dump_default="/root/capsule/results/test", metadata={'description':"Output folder for results"})
+    out = ags.fields.OutputDir(dump_default="/root/capsule/results", metadata={'description':"Output folder for results"})
     # TODO add S3 bucket to write results to
     ccf_annotation_file = ags.fields.String( dump_default="/root/capsule/data/ccf/annotation_10.nrrd", metadata={'description':"Path to CCF annotation file"})
     ccf_template_file = ags.fields.String(dump_default="/root/capsule/data/ccf/average_template_10.nii.gz", metadata={'description': 'Path to CCF file'})
     ccf_resolution = ags.fields.Int(dump_default=10, metadata={'description':"CCF voxel resolution in microns"})
-    slice_file = ags.fields.String(dump_default=None, metadata={'description': 'File with slice names to regsiter'})
+    slice_file = ags.fields.String(dump_default='/root/capsule/data/slices_to_register.txt', metadata={'description': 'File with slice names to regsiter'})
     #TODO add cell file option?
 
 def main(args):
