@@ -1,20 +1,20 @@
 # Ignorespecific file types
-*.csv
 *.DS_Store
 
 # Ignore specific folders and their contents
+/data/*
+/archive/*
+/results/*
+/scratch/*
+*/.vscode/
+.codeocean
+
+# Python cache
 __pycache__/
-ccf_reg_input/
-ccf_reg_output/
-ccf_reg_output*/
-ccf_reg_reports/
-new_standardization/
-old/
-output/
-bad_transform_examples/
-old_output_csvs/
-misc_code/
-ccf_reg_database/
-cell_soma_structure_and_coords/
-upright_investigation/
-temp_swc_backup/
+*.pyc
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Optional: virtual env
+.env/

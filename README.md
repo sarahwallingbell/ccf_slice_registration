@@ -1,4 +1,3 @@
-# ccf_slice_registration
+# CCF Slice Registration
 
-Register slice (e.g. patch-seq) data to the CCF.
-
+Pipeline for registering histological slices (i.e. Patch-seq) to the Common Coordinate Framework (CCF) using fiducial markers. 
