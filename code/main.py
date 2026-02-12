@@ -8,15 +8,20 @@ from query import query_engine_code_ocean, get_id_by_name, get_name_by_id
 from transform import slice_transform_to_ccf
 from register import register_morphologies
 from tqdm import tqdm
+from datetime import datetime as dt
 
 
 class RegisterCCFSchema(ags.ArgSchema):
-    out = ags.fields.OutputDir(dump_default="/root/capsule/results", metadata={'description':"Output folder for results"})
-    # TODO add S3 bucket to write results to
-    ccf_annotation_file = ags.fields.String( dump_default="/root/capsule/data/ccf/annotation_10.nrrd", metadata={'description':"Path to CCF annotation file"})
-    ccf_template_file = ags.fields.String(dump_default="/root/capsule/data/ccf/average_template_10.nii.gz", metadata={'description': 'Path to CCF file'})
-    ccf_resolution = ags.fields.Int(dump_default=10, metadata={'description':"CCF voxel resolution in microns"})
-    slice_file = ags.fields.String(dump_default=None, metadata={'description': 'File with slice names to regsiter'})
+    out = ags.fields.OutputDir(dump_default=None, metadata={'description':"Output folder for results"})
+
+    s3_bucket = ags.fields.String(dump_default=None, metadata={'description':"S3 bucket to write results to"})
+    s3_prefix = ags.fields.String(dump_default=None, metadata={'description':"Further folders in S3 bucket to write results to"})
+
+    ccf_annotation_file = ags.fields.String( dump_default=None, metadata={'description':"Path to CCF annotation file (i.e. annotation_10.nrrd)"})
+    ccf_template_file = ags.fields.String(dump_default=None, metadata={'description': 'Path to CCF file (i.e. average_template_10.nii.gz)'})
+    ccf_resolution = ags.fields.Int(dump_default=None, metadata={'description':"CCF voxel resolution in microns"})
+
+    slice_file = ags.fields.String(required=False, allow_none=True, dump_default=None, metadata={'description': 'File with slice names to regsiter'})
     #TODO add cell file option?
 
 def main(args):
@@ -28,9 +33,8 @@ def main(args):
     somas, slices = get_pins(output_folder = args['out'], 
                              annotation_file = args['ccf_annotation_file'],
                              query_engine = query_engine_code_ocean)
-
-
-    if args['slice_file'] is not None and os.path.exists(args['slice_file']):
+                             
+    if not args['slice_file'] is None and os.path.exists(args['slice_file']):
         # Filter list to only register the input slices/cells
         with open(args['slice_file'], "r") as f:
             slice_names = [line.strip() for line in f]
@@ -90,7 +94,23 @@ def main(args):
     registered_cells_df.to_csv(os.path.join(args['out'], 'registered_cells.csv'), index=False)
 
 
-    # TODO 5. Write results to S3 (need persistant programatic read/write access via IAM user)
+    # 5. Copy results to S3
+    
+    if not args['bucket_name'] is None:
+        print('\n\nCopying results to S3...')
+        date_str = dt.now().strftime("%Y%m%d")
+        s3_prefix = os.path.join(args['s3_prefix'], date_str)
+        try: 
+            s3 = boto3.client("s3")
+            for root, dirs, files in os.walk(out):
+                for file in files:
+                    local_path = os.path.join(root, file)
+                    relative_path = os.path.relpath(local_path, out) # Get relative path inside /results
+                    s3_key = os.path.join(s3_prefix, relative_path).replace("\\", "/") # Build S3 key (this preserves folder structure)
+                    s3.upload_file(local_path, args['bucket_name'], s3_key, ExtraArgs={'ServerSideEncryption': 'AES256'}) #uplaod to s3
+
+        except Exception as e:
+            print("ERROR:", e)
 
 
     # TODO do we want the files organized differently in the end? i.e. all the upright swcs pooled together?
