@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import argschema as ags
 import SimpleITK as sitk
+import boto3
 from pins import get_pins
 from query import query_engine_code_ocean, get_id_by_name, get_name_by_id
 from transform import slice_transform_to_ccf
@@ -96,18 +97,18 @@ def main(args):
 
     # 5. Copy results to S3
     
-    if not args['bucket_name'] is None:
+    if not args['s3_bucket'] is None:
         print('\n\nCopying results to S3...')
         date_str = dt.now().strftime("%Y%m%d")
         s3_prefix = os.path.join(args['s3_prefix'], date_str)
         try: 
             s3 = boto3.client("s3")
-            for root, dirs, files in os.walk(out):
+            for root, dirs, files in os.walk(args['out']):
                 for file in files:
                     local_path = os.path.join(root, file)
-                    relative_path = os.path.relpath(local_path, out) # Get relative path inside /results
+                    relative_path = os.path.relpath(local_path, args['out']) # Get relative path inside /results
                     s3_key = os.path.join(s3_prefix, relative_path).replace("\\", "/") # Build S3 key (this preserves folder structure)
-                    s3.upload_file(local_path, args['bucket_name'], s3_key, ExtraArgs={'ServerSideEncryption': 'AES256'}) #uplaod to s3
+                    s3.upload_file(local_path, args['s3_bucket'], s3_key, ExtraArgs={'ServerSideEncryption': 'AES256'}) #uplaod to s3
 
         except Exception as e:
             print("ERROR:", e)
